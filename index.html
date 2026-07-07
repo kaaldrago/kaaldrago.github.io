@@ -375,22 +375,23 @@
 
         // DRAGO_AI Interface Operations
         function triggerAIWelcome(role) {
-            const terminal = document.getElementById("ai-terminal");
-            terminal.innerHTML = ""; 
-            const lines = [
-                `<span style="color: var(--neon-pink)">&gt; Mainframe interface uplinked... [OK]</span>`,
-                `<span style="color: var(--main-text)">&gt; Identity network level authorized: ${role}</span>`,
-                `<span style="color: var(--neon-yellow)">&gt; DRAGO_AI: "Welcome runner. Systems online." 🌌</span>`
-            ];
+    const terminal = document.getElementById("ai-terminal");
+    terminal.innerHTML = ""; 
+    const lines = [
+        `<span style="color: var(--neon-pink)">&gt; Mainframe interface uplinked... [OK]</span>`,
+        `<span style="color: var(--main-text)">&gt; Identity network level authorized: ${role}</span>`,
+        `<span style="color: var(--neon-yellow)">&gt; DRAGO_AI: "Welcome runner. Systems online." 🌌</span>`,
+        `<span style="color: #00ff00">&gt; DRAGO_AI: [SYSTEM OPTIMIZATION AVAILABLE] Type 'optimize' to begin initialization sequence...</span>`
+    ];
 
-            let delay = 0;
-            lines.forEach((line) => {
-                setTimeout(() => {
-                    terminal.innerHTML += `<br>${line}`;
-                    terminal.scrollTop = terminal.scrollHeight;
-                }, delay);
-                delay += 500;
-            });
+    let delay = 0;
+    lines.forEach((line) => {
+        setTimeout(() => {
+            terminal.innerHTML += `<br>${line}`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }, delay);
+        delay += 600;
+    });
         }
 
         function askAI() {
