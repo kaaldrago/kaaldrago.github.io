@@ -374,50 +374,58 @@
         }
 
         // DRAGO_AI Interface Operations
-        function triggerAIWelcome(role) {
+ function triggerAIWelcome(role) {
     const terminal = document.getElementById("ai-terminal");
     
-    // Terminal ki styling ko yahin se ekdum colorful aur bada bana dete hain
-    terminal.style.background = "linear-gradient(135deg, #1f005c, #5b0060, #870058, #b0004c, #e10032)";
-    terminal.style.border = "3px solid #ffff00";
-    terminal.style.boxShadow = "0 0 30px #ff0055, inset 0 0 15px rgba(255,255,255,0.3)";
+    // Clean White Theme Styling
+    terminal.style.background = "#ffffff";
+    terminal.style.color = "#222222";
+    terminal.style.border = "1px solid #dddddd";
+    terminal.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
     terminal.style.height = "auto";
-    terminal.style.padding = "20px";
+    terminal.style.padding = "30px 20px";
     terminal.style.textAlign = "center";
+    terminal.style.borderRadius = "8px";
     
-    // Bade letters aur solid vibrant colors ka combo
+    // Professional Large Typography
     terminal.innerHTML = `
-        <h1 style="font-size: 2.8rem; color: #ffff00; text-shadow: 3px 3px 0px #ff0055, -2px -2px 0px #00ffff; margin: 10px 0; font-family: 'Arial Black', Gadget, sans-serif;">
-            WELCOME, RUNNER!
+        <h1 style="font-size: 2.5rem; color: #111111; margin: 0 0 10px 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 700; letter-spacing: -0.5px;">
+            Welcome, Runner
         </h1>
-        <p style="font-size: 1.2rem; color: #fff; font-weight: bold; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
-            CORE LEVEL AUTHORIZED: <span style="color: #00ffff; background: #000; padding: 2px 8px; border-radius: 4px;">${role}</span>
-        </p>
-        <p style="color: #ffff00; font-weight: bold; font-size: 1rem; margin-bottom: 20px;">
-            ⚡ DRAGO_AI NEURAL LINK ONLINE ⚡
+        <p style="font-size: 1.1rem; color: #666666; margin-bottom: 25px; font-family: sans-serif;">
+            Authorization Level: <span style="color: #0066cc; font-weight: 600;">${role}</span>
         </p>
         
         <button id="next-page-btn" style="
-            background: #ff0055; 
+            background: #111111; 
             color: #ffffff; 
-            border: 2px solid #ffff00; 
-            padding: 15px 40px; 
-            font-size: 1.3rem; 
-            font-weight: 900; 
-            letter-spacing: 2px; 
+            border: none; 
+            padding: 12px 35px; 
+            font-size: 1rem; 
+            font-weight: 600; 
             cursor: pointer; 
-            box-shadow: 0 0 15px #ff0055; 
-            border-radius: 50px; 
-            text-shadow: 1px 1px 2px #000;
-            transition: transform 0.2s;
-        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" onclick="goToNextPage()">
-            OPTIMIZE & PROCEED &gt;&gt;
+            border-radius: 4px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.2s, transform 0.1s;
+        " onmouseover="this.style.background='#333333'; this.style.transform='clientY(-1px)'" onmouseout="this.style.background='#111111'; this.style.transform='none'" onclick="goToNextPage()">
+            Optimize & Proceed
         </button>
     `;
 }
 
-// Yeh function chalega jab user us colorful button par click karega
 function goToNextPage() {
+    const terminal = document.getElementById("ai-terminal");
+    
+    // Next page content in clean light mode
+    terminal.innerHTML = `
+        <h2 style="color: #00aa66; font-size: 1.8rem; margin-top: 10px; font-weight: 600;">✓ Optimization Complete</h2>
+        <p style="color: #444444; font-size: 1rem; line-height: 1.5; margin-bottom: 15px;">All core network systems have been successfully calibrated and stabilized.</p>
+        <div style="color: #666666; font-size: 0.9rem; font-weight: 500; background: #f5f5f5; padding: 8px; border-radius: 4px; display: inline-block;">
+            [ Status: Access Granted to Next Zone ]
+        </div>
+    `;
+}
+        
     const terminal = document.getElementById("ai-terminal");
     
     // Yahan aap agle page ka jo bhi content dikhana chahte hain wo load ho jayega
