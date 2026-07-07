@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+        
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaalDrago | Classic Terminal</title>
+    <title>KaalDrago | Cyberpunk Terminal</title>
     <style>
         :root {
-            --bg-color: #030a03;
-            --main-text: #33ff33;
-            --accent-1: #00ffcc;
-            --accent-2: #ff0055;
-            --highlight: #ffff33;
+            --bg-color: #05010d; /* Deep Cyberpunk Purple/Black */
+            --main-text: #00ffff; /* Neon Cyan */
+            --neon-purple: #bd00ff; /* Hot Purple */
+            --neon-pink: #ff0055; /* Neon Pink/Red */
+            --neon-yellow: #ffff00; /* Cyber Yellow */
             --font-family: 'Courier New', Courier, monospace;
         }
 
@@ -25,17 +26,17 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            /* Classic CRT Monitor effect */
-            text-shadow: 0 0 8px rgba(51, 255, 51, 0.8), 0 0 2px rgba(51, 255, 51, 1);
+            /* Cyber Neon Glow Effect */
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 2px rgba(0, 255, 255, 1);
         }
 
-        /* Scanline Overlay for Retro Look */
+        /* Scanline CRT Overlay */
         body::before {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
             z-index: 99;
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
@@ -48,125 +49,152 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.5; /* Matrix rain thoda light kiya classic feel ke liye */
+            opacity: 0.65;
         }
 
-        /* Classic Box Border Style */
+        /* Colorful Cyber Box */
         .box {
             text-align: center;
-            border: 2px dashed var(--main-text);
-            padding: 40px 30px;
-            background: rgba(0, 5, 0, 0.9);
-            box-shadow: 0 0 20px rgba(51, 255, 51, 0.3);
+            border: 2px solid var(--neon-purple);
+            padding: 35px 25px;
+            background: rgba(10, 2, 20, 0.9);
+            box-shadow: 0 0 25px var(--neon-purple), inset 0 0 15px rgba(189, 0, 255, 0.3);
+            border-radius: 8px;
             z-index: 10;
             width: 90%;
-            max-width: 450px;
+            max-width: 430px;
             position: relative;
         }
 
-        /* Scan animation on the box */
+        /* Scanning Laser Line */
         .box::after {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; height: 5px;
-            background: rgba(51, 255, 51, 0.2);
-            animation: scan 4s linear infinite;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+            animation: scan 3.5s linear infinite;
         }
 
-        /* Classic Lock Screen Typography */
         #login-screen h2 {
-            color: var(--main-text);
+            color: var(--neon-pink);
             font-size: 1.5rem;
             letter-spacing: 3px;
-            margin-bottom: 20px;
+            text-shadow: 0 0 12px var(--neon-pink);
+            margin-bottom: 15px;
         }
 
         .terminal-text {
             color: var(--main-text);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
             text-align: left;
             display: inline-block;
+            width: 85%;
         }
 
-        .pass-input {
+        /* Cyber Input Fields */
+        .terminal-input, .terminal-select {
             background: #000;
             border: 1px solid var(--main-text);
             color: var(--main-text);
-            padding: 12px;
+            padding: 10px;
             font-family: var(--font-family);
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             text-align: center;
             outline: none;
             width: 85%;
-            margin-bottom: 20px;
-            letter-spacing: 5px;
-            box-shadow: inset 0 0 10px rgba(51, 255, 51, 0.5);
+            margin-bottom: 15px;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
         }
 
+        .terminal-select {
+            text-align-last: center;
+            cursor: pointer;
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            box-shadow: 0 0 8px rgba(189, 0, 255, 0.3);
+        }
+        .terminal-select option {
+            background: #0d041a;
+            color: var(--neon-purple);
+        }
+
+        /* Neon Button */
         .btn {
             background: transparent;
-            color: var(--main-text);
-            border: 1px solid var(--main-text);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
             padding: 10px 25px;
             font-family: var(--font-family);
             font-weight: bold;
             cursor: pointer;
             letter-spacing: 2px;
             transition: all 0.3s;
+            margin-top: 5px;
+            text-shadow: 0 0 5px var(--neon-pink);
+            box-shadow: 0 0 8px rgba(255, 0, 85, 0.2);
+            border-radius: 4px;
         }
 
         .btn:hover {
-            background: var(--main-text);
+            background: var(--neon-pink);
             color: #000;
-            box-shadow: 0 0 15px var(--main-text);
+            box-shadow: 0 0 20px var(--neon-pink);
+            text-shadow: none;
         }
 
         #error-msg {
-            color: #ff3333;
+            color: #ff0000;
             margin-top: 15px;
             font-weight: bold;
-            text-shadow: 0 0 8px #ff3333;
+            text-shadow: 0 0 8px #ff0000;
+            font-size: 0.9rem;
         }
 
-        /* Main Dashboard */
         #main-dashboard {
             display: none;
-            border-style: solid;
+            border-color: var(--main-text);
+            box-shadow: 0 0 25px var(--main-text);
         }
 
         h1 {
             font-size: 1.8rem;
-            color: var(--main-text);
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
             margin-top: 0;
             letter-spacing: 2px;
         }
 
-        /* AI Section */
+        /* AI SECTION WITH COLORFUL TERMINAL */
         .ai-container {
             margin-top: 20px;
-            border-top: 1px dashed var(--main-text);
+            border-top: 1px dashed var(--neon-purple);
             padding-top: 15px;
             text-align: left;
         }
 
         .ai-title {
-            color: var(--main-text);
+            color: var(--neon-yellow);
+            text-shadow: 0 0 8px var(--neon-yellow);
             font-weight: bold;
             margin-bottom: 10px;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
         }
 
         #ai-terminal {
-            height: 140px;
+            height: 160px;
             background: #000;
-            border: 1px solid var(--main-text);
-            padding: 10px;
+            border: 1px solid var(--neon-purple);
+            box-shadow: inset 0 0 10px rgba(189, 0, 255, 0.2);
+            padding: 12px;
             overflow-y: auto;
             font-size: 0.85rem;
             margin-bottom: 10px;
-            color: var(--main-text);
+            line-height: 1.4;
         }
 
         .ai-input-group {
@@ -182,6 +210,7 @@
             padding: 8px;
             font-family: var(--font-family);
             outline: none;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
         }
 
         @keyframes scan {
@@ -195,58 +224,71 @@
     <canvas id="matrix"></canvas>
 
     <div id="login-screen" class="box">
-        <h2>[ MAIN FRAME LOCK ]</h2>
+        <h2>[ CYBER CORE ACCESS ]</h2>
         <div class="terminal-text">
-            kaaldrago_os v1.0.4<br>
-            connecting to secure node... ok<br>
-            status: awaiting decryption key_
+            kaaldrago_os v2.0.0<br>
+            <span style="color:var(--neon-yellow)">[STATUS]: Awaiting credentials...</span>
         </div>
+        
+        <select id="account-type" class="terminal-select">
+            <option value="ADMIN">CORE_LEVEL: ADMIN</option>
+            <option value="HACKER">CORE_LEVEL: NET_HACKER</option>
+            <option value="GUEST">CORE_LEVEL: GUEST</option>
+        </select>
+
+        <input type="text" id="username-field" class="terminal-input" placeholder="USERNAME" autocomplete="off">
+        <input type="password" id="password-field" class="terminal-input" placeholder="DECRYPTION KEY" autocomplete="off">
         <br>
-        <input type="password" id="password-field" class="pass-input" placeholder="••••" autocomplete="off">
-        <br>
-        <button class="btn" onclick="checkPassword()">EXECUTE</button>
+        
+        <button class="btn" onclick="checkLogin()">INITIALIZE</button>
         <div id="error-msg"></div>
     </div>
 
     <div id="main-dashboard" class="box">
         <h1>&gt; ACCESS GRANTED</h1>
-        <p style="font-size:0.9rem;">SECURE MAIN CONTROL PANEL</p>
+        <p style="font-size:0.9rem; color: var(--main-text)">SYSTEM OVERRIDE: <span id="display-level" style="color:var(--neon-yellow)">ADMIN</span></p>
 
         <div class="ai-container">
-            <div class="ai-title">&gt; DRAGO_AI CORE INTERFACE</div>
+            <div class="ai-title">🤖 DRAGO_AI NEURAL INTERFACE</div>
             <div id="ai-terminal"></div>
             <div class="ai-input-group">
-                <input type="text" id="ai-input" placeholder="Enter command..." onkeypress="handleKeyPress(event)">
-                <button class="btn" style="padding: 8px 12px; font-size:0.8rem;" onclick="askAI()">SEND</button>
+                <input type="text" id="ai-input" placeholder="Transmit command..." onkeypress="handleKeyPress(event)">
+                <button class="btn" style="padding: 8px 12px; font-size:0.8rem; color:var(--main-text); border-color:var(--main-text); text-shadow:0 0 5px var(--main-text);" onclick="askAI()">SEND</button>
             </div>
         </div>
     </div>
 
     <script>
+        const CORRECT_USERNAME = "drago";
         const CORRECT_PASSWORD = "drago777"; 
 
-        function checkPassword() {
-            const input = document.getElementById("password-field").value;
+        function checkLogin() {
+            const accType = document.getElementById("account-type").value;
+            const userInbound = document.getElementById("username-field").value.trim();
+            const passInbound = document.getElementById("password-field").value;
             const error = document.getElementById("error-msg");
             
-            if (input === CORRECT_PASSWORD) {
+            if (userInbound === CORRECT_USERNAME && passInbound === CORRECT_PASSWORD) {
                 document.getElementById("login-screen").style.display = "none";
                 document.getElementById("main-dashboard").style.display = "block";
-                triggerAIWelcome(); 
+                document.getElementById("display-level").innerText = accType;
+                triggerAIWelcome(accType); 
             } else {
-                error.innerText = "!! ACCESS DENIED: BAD KEY !!";
+                error.innerText = "!! CRITICAL_ERROR: INTRUDER ALERT !!";
                 document.getElementById("password-field").value = "";
                 setTimeout(() => { error.innerText = ""; }, 2000);
             }
         }
 
-        function triggerAIWelcome() {
+        // COLORFUL WELCOME LOGIC IN AI
+        function triggerAIWelcome(role) {
             const terminal = document.getElementById("ai-terminal");
+            
+            // Neon formatted HTML lines
             const lines = [
-                "&gt; Loading core intelligence subroutines...",
-                "&gt; Decryption successful.",
-                "&gt; DRAGO_AI: Active. Welcome back, Commander.",
-                "&gt; Standing by for terminal queries..."
+                `<span style="color: var(--neon-pink)">&gt; Booting cyberpunk mainframe protocols... [OK]</span>`,
+                `<span style="color: var(--main-text)">&gt; Establishing secure uplink for clearance: ${role}</span>`,
+                `<span style="color: var(--neon-yellow)">&gt; DRAGO_AI: "Welcome back, Commander KaalDrago. Systems are fully responsive. Neon grids active." 🌌</span>`
             ];
 
             let delay = 0;
@@ -255,7 +297,7 @@
                     terminal.innerHTML += `<br>${line}`;
                     terminal.scrollTop = terminal.scrollHeight;
                 }, delay);
-                delay += 700;
+                delay += 800;
             });
         }
 
@@ -266,19 +308,19 @@
 
             if (query === "") return;
 
-            terminal.innerHTML += `<br><br>&gt; USER: ${inputField.value}`;
+            terminal.innerHTML += `<br><br><span style="color: var(--main-text);">&gt; USER:</span> ${inputField.value}`;
             inputField.value = "";
 
-            let reply = "Error: Unknown command sequence.";
+            let reply = `<span style="color: var(--neon-pink)">DRAGO_AI: Error. Unknown protocol sequence.</span>`;
             if (query.includes("hello") || query.includes("hi")) {
-                reply = "DRAGO_AI: Hello Commander. Network link is stable.";
+                reply = `<span style="color: var(--neon-yellow)">DRAGO_AI: Greetings Commander. Matrix grids are glowing and stable.</span>`;
             } else if (query.includes("clear")) {
-                terminal.innerHTML = `&gt; Terminal log cleared.`;
+                terminal.innerHTML = `<span style="color: var(--main-text)">&gt; Terminal buffer cleared.</span>`;
                 return;
             }
 
             setTimeout(() => {
-                terminal.innerHTML += `<br>&gt; ${reply}`;
+                terminal.innerHTML += `<br>${reply}`;
                 terminal.scrollTop = terminal.scrollHeight;
             }, 400);
         }
@@ -287,29 +329,35 @@
             if (e.key === 'Enter') askAI();
         }
 
-        // RAINBOW MATRIX BACKGROUND (Slightly optimized for classic view)
+        // PURPLE & CYAN MULTI-COLOR MATRIX RAIN
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const alphabet = "0101010101010101X█▓▒░";
+        const alphabet = "010101X█▓▒░";
         const fontSize = 16;
         const columns = canvas.width / fontSize;
         const rainDrops = Array(Math.floor(columns)).fill(1);
 
         const draw = () => {
-            ctx.fillStyle = 'rgba(3, 10, 3, 0.1)';
+            ctx.fillStyle = 'rgba(5, 1, 13, 0.15)'; // Deep purple fade
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            const time = Date.now() / 1000;
-            const r = Math.floor(Math.sin(time) * 50 + 100);
-            const g = Math.floor(Math.sin(time + 2) * 100 + 155);
-            const b = Math.floor(Math.sin(time + 4) * 50 + 100);
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            
             ctx.font = fontSize + 'px monospace';
+            
             for (let i = 0; i < rainDrops.length; i++) {
                 const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                
+                // Randomly mixing Cyan and Purple colors in matrix rain
+                if (Math.random() > 0.5) {
+                    ctx.fillStyle = '#00ffff'; // Neon Cyan
+                } else {
+                    ctx.fillStyle = '#bd00ff'; // Neon Purple
+                }
+                
                 ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                
                 if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.98) {
                     rainDrops[i] = 0;
                 }
@@ -320,5 +368,3 @@
     </script>
 </body>
 </html>
-
-
