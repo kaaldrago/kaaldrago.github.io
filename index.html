@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaalDrago | Network Access</title>
+    <title>KaalDrago | Classic Terminal</title>
     <style>
         :root {
-            --bg-color: #000;
-            --main-text: #0F0; /* Matrix Green */
-            --accent-1: #0FF; /* Cyan */
-            --accent-2: #F0F; /* Magenta */
-            --highlight: #FF0; /* Yellow */
+            --bg-color: #030a03;
+            --main-text: #33ff33;
+            --accent-1: #00ffcc;
+            --accent-2: #ff0055;
+            --highlight: #ffff33;
             --font-family: 'Courier New', Courier, monospace;
         }
 
@@ -25,60 +25,22 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            text-shadow: 0 0 5px var(--main-text);
+            /* Classic CRT Monitor effect */
+            text-shadow: 0 0 8px rgba(51, 255, 51, 0.8), 0 0 2px rgba(51, 255, 51, 1);
         }
 
-        .container {
-            text-align: center;
-            border: 2px solid var(--accent-1);
-            padding: 40px;
-            background: rgba(0, 15, 0, 0.9);
-            box-shadow: 0 0 30px var(--accent-2);
-            border-radius: 10px;
-            z-index: 10;
-            backdrop-filter: blur(5px);
+        /* Scanline Overlay for Retro Look */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 99;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
         }
 
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 25px;
-            letter-spacing: 3px;
-            color: var(--highlight);
-            text-shadow: 0 0 10px var(--highlight);
-            animation: glitch 1s infinite alternate;
-        }
-
-        .data-line {
-            font-size: 1.3rem;
-            margin: 12px 0;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .label {
-            color: var(--accent-1);
-        }
-
-        .value {
-            color: var(--accent-2);
-            font-weight: bold;
-        }
-
-        .status-box {
-            margin-top: 25px;
-            padding: 10px 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            font-size: 1.4rem;
-            color: var(--bg-color);
-            background-color: var(--highlight);
-            box-shadow: 0 0 15px var(--highlight);
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Matrix Rain Background Effect */
         canvas {
             position: absolute;
             top: 0;
@@ -86,21 +48,145 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            opacity: 0.5; /* Matrix rain thoda light kiya classic feel ke liye */
         }
 
-        /* Animations */
-        @keyframes glitch {
-            0% { transform: skewX(0deg); text-shadow: -2px 0 var(--accent-1), 2px 0 var(--accent-2); }
-            20% { transform: skewX(-5deg); text-shadow: -2px 0 var(--accent-1), 2px 0 var(--accent-2); }
-            40% { transform: skewX(5deg); text-shadow: 2px 0 var(--accent-1), -2px 0 var(--accent-2); }
-            60% { transform: skewX(0deg); text-shadow: 2px 0 var(--accent-1), -2px 0 var(--accent-2); }
-            80% { transform: skewX(0deg); text-shadow: -2px 0 var(--accent-1), 2px 0 var(--accent-2); }
-            100% { transform: skewX(0deg); text-shadow: -2px 0 var(--accent-1), 2px 0 var(--accent-2); }
+        /* Classic Box Border Style */
+        .box {
+            text-align: center;
+            border: 2px dashed var(--main-text);
+            padding: 40px 30px;
+            background: rgba(0, 5, 0, 0.9);
+            box-shadow: 0 0 20px rgba(51, 255, 51, 0.3);
+            z-index: 10;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 15px var(--highlight); }
-            50% { opacity: 0.8; box-shadow: 0 0 25px var(--highlight); }
+        /* Scan animation on the box */
+        .box::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 5px;
+            background: rgba(51, 255, 51, 0.2);
+            animation: scan 4s linear infinite;
+        }
+
+        /* Classic Lock Screen Typography */
+        #login-screen h2 {
+            color: var(--main-text);
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .terminal-text {
+            color: var(--main-text);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .pass-input {
+            background: #000;
+            border: 1px solid var(--main-text);
+            color: var(--main-text);
+            padding: 12px;
+            font-family: var(--font-family);
+            font-size: 1.3rem;
+            text-align: center;
+            outline: none;
+            width: 85%;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            box-shadow: inset 0 0 10px rgba(51, 255, 51, 0.5);
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--main-text);
+            border: 1px solid var(--main-text);
+            padding: 10px 25px;
+            font-family: var(--font-family);
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--main-text);
+            color: #000;
+            box-shadow: 0 0 15px var(--main-text);
+        }
+
+        #error-msg {
+            color: #ff3333;
+            margin-top: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ff3333;
+        }
+
+        /* Main Dashboard */
+        #main-dashboard {
+            display: none;
+            border-style: solid;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--main-text);
+            margin-top: 0;
+            letter-spacing: 2px;
+        }
+
+        /* AI Section */
+        .ai-container {
+            margin-top: 20px;
+            border-top: 1px dashed var(--main-text);
+            padding-top: 15px;
+            text-align: left;
+        }
+
+        .ai-title {
+            color: var(--main-text);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        #ai-terminal {
+            height: 140px;
+            background: #000;
+            border: 1px solid var(--main-text);
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            color: var(--main-text);
+        }
+
+        .ai-input-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        #ai-input {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--main-text);
+            color: var(--main-text);
+            padding: 8px;
+            font-family: var(--font-family);
+            outline: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
         }
     </style>
 </head>
@@ -108,63 +194,131 @@
 
     <canvas id="matrix"></canvas>
 
-    <div class="container">
-        <h1>[ KAALDRAGO NETWORK ]</h1>
-        <div class="data-line"><span class="label">User:</span><span class="value">Authorized_Drago</span></div>
-        <div class="data-line"><span class="label">Protocol:</span><span class="value">Multi-Vector Sec</span></div>
-        <div class="data-line"><span class="label">Trace Level:</span><span class="value">Zero / Ghost</span></div>
-        <div class="data-line"><span class="label">Quantum Link:</span><span class="value">Established [ 4096-bit ]</span></div>
-        <div class="status-box">SYSTEM ACCESS: GHOSTED</div>
+    <div id="login-screen" class="box">
+        <h2>[ MAIN FRAME LOCK ]</h2>
+        <div class="terminal-text">
+            kaaldrago_os v1.0.4<br>
+            connecting to secure node... ok<br>
+            status: awaiting decryption key_
+        </div>
+        <br>
+        <input type="password" id="password-field" class="pass-input" placeholder="••••" autocomplete="off">
+        <br>
+        <button class="btn" onclick="checkPassword()">EXECUTE</button>
+        <div id="error-msg"></div>
+    </div>
+
+    <div id="main-dashboard" class="box">
+        <h1>&gt; ACCESS GRANTED</h1>
+        <p style="font-size:0.9rem;">SECURE MAIN CONTROL PANEL</p>
+
+        <div class="ai-container">
+            <div class="ai-title">&gt; DRAGO_AI CORE INTERFACE</div>
+            <div id="ai-terminal"></div>
+            <div class="ai-input-group">
+                <input type="text" id="ai-input" placeholder="Enter command..." onkeypress="handleKeyPress(event)">
+                <button class="btn" style="padding: 8px 12px; font-size:0.8rem;" onclick="askAI()">SEND</button>
+            </div>
+        </div>
     </div>
 
     <script>
+        const CORRECT_PASSWORD = "drago777"; 
+
+        function checkPassword() {
+            const input = document.getElementById("password-field").value;
+            const error = document.getElementById("error-msg");
+            
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("main-dashboard").style.display = "block";
+                triggerAIWelcome(); 
+            } else {
+                error.innerText = "!! ACCESS DENIED: BAD KEY !!";
+                document.getElementById("password-field").value = "";
+                setTimeout(() => { error.innerText = ""; }, 2000);
+            }
+        }
+
+        function triggerAIWelcome() {
+            const terminal = document.getElementById("ai-terminal");
+            const lines = [
+                "&gt; Loading core intelligence subroutines...",
+                "&gt; Decryption successful.",
+                "&gt; DRAGO_AI: Active. Welcome back, Commander.",
+                "&gt; Standing by for terminal queries..."
+            ];
+
+            let delay = 0;
+            lines.forEach((line) => {
+                setTimeout(() => {
+                    terminal.innerHTML += `<br>${line}`;
+                    terminal.scrollTop = terminal.scrollHeight;
+                }, delay);
+                delay += 700;
+            });
+        }
+
+        function askAI() {
+            const inputField = document.getElementById("ai-input");
+            const query = inputField.value.trim().toLowerCase();
+            const terminal = document.getElementById("ai-terminal");
+
+            if (query === "") return;
+
+            terminal.innerHTML += `<br><br>&gt; USER: ${inputField.value}`;
+            inputField.value = "";
+
+            let reply = "Error: Unknown command sequence.";
+            if (query.includes("hello") || query.includes("hi")) {
+                reply = "DRAGO_AI: Hello Commander. Network link is stable.";
+            } else if (query.includes("clear")) {
+                terminal.innerHTML = `&gt; Terminal log cleared.`;
+                return;
+            }
+
+            setTimeout(() => {
+                terminal.innerHTML += `<br>&gt; ${reply}`;
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 400);
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') askAI();
+        }
+
+        // RAINBOW MATRIX BACKGROUND (Slightly optimized for classic view)
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+";
+        const alphabet = "0101010101010101X█▓▒░";
         const fontSize = 16;
         const columns = canvas.width / fontSize;
-
-        const rainDrops = [];
-
-        for (let x = 0; x < columns; x++) {
-            rainDrops[x] = 1;
-        }
+        const rainDrops = Array(Math.floor(columns)).fill(1);
 
         const draw = () => {
-            // Darker background fade for clearer rainbow colors
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillStyle = 'rgba(3, 10, 3, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Change color dynamically for rainbow effect
             const time = Date.now() / 1000;
-            const r = Math.floor(Math.sin(time) * 127 + 128);
-            const g = Math.floor(Math.sin(time + 2) * 127 + 128);
-            const b = Math.floor(Math.sin(time + 4) * 127 + 128);
+            const r = Math.floor(Math.sin(time) * 50 + 100);
+            const g = Math.floor(Math.sin(time + 2) * 100 + 155);
+            const b = Math.floor(Math.sin(time + 4) * 50 + 100);
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            
             ctx.font = fontSize + 'px monospace';
-
             for (let i = 0; i < rainDrops.length; i++) {
                 const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
                 ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.98) {
                     rainDrops[i] = 0;
                 }
                 rainDrops[i]++;
             }
         };
-
-        setInterval(draw, 35);
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        setInterval(draw, 40);
     </script>
 </body>
 </html>
+
+
